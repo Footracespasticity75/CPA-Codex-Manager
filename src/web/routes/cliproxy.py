@@ -563,8 +563,9 @@ class AutoPatrolManager:
             logger.info("自动巡检未启用，跳过启动")
             return
 
-        logger.info(f"应用已就绪，5 秒后尝试启动自动巡检: {enabled_services}")
-        await asyncio.sleep(5)
+        delay_seconds = 5 * 60
+        logger.info(f"应用已就绪，{delay_seconds // 60} 分钟后尝试启动自动巡检: {enabled_services}")
+        await asyncio.sleep(delay_seconds)
         for service_id in enabled_services:
             cfg = self._configs.get(service_id)
             if cfg and cfg.enabled:

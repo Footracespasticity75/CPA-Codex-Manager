@@ -809,7 +809,7 @@ input[type="checkbox"] {
     }
 
     .container {
-        padding: 0 16px;
+        padding: 0 20px;
     }
 
     .container,
@@ -896,7 +896,7 @@ input[type="checkbox"] {
     }
 
     .main-content {
-        padding: 22px 0 44px;
+        padding: 30px 0 44px;
     }
 
     .site-footer {
@@ -907,7 +907,8 @@ input[type="checkbox"] {
     }
 
     .page-header {
-        margin-bottom: 20px;
+        margin-top: 8px;
+        margin-bottom: 24px;
     }
 
     .page-header h2 {
@@ -940,8 +941,8 @@ input[type="checkbox"] {
     .card-body,
     .modal-header,
     .modal-body {
-        padding-left: 16px !important;
-        padding-right: 16px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
     }
 
     .card-header {
@@ -1149,6 +1150,10 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+
     .page-header h2 {
         font-size: 24px;
     }

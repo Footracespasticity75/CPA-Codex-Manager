@@ -159,7 +159,6 @@
 
             #batch-progress-section > div:first-child,
             .card-header[style],
-            .batch-stats,
             .form-actions[style] {
                 flex-direction: column !important;
                 align-items: stretch !important;
@@ -187,18 +186,24 @@
             }
 
             .batch-stats {
-                flex-wrap: wrap;
-                gap: 16px !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 10px !important;
+                align-items: stretch;
+            }
+
+            .batch-stats > div {
+                min-width: 0;
+                text-align: left;
+            }
+
+            .batch-stats > div strong {
+                font-size: 18px !important;
+                line-height: 1.2;
             }
 
             .task-status-item {
                 padding: 14px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .task-status-row {
-                grid-template-columns: 1fr;
             }
         }
 

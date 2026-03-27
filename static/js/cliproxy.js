@@ -51,10 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPatrolOverview();
     loadPatrolStatus(true); // 初始加载需要回填表单
     loadPatrolHistory();
+
+    // 仅自动刷新顶部巡检概览与运行状态，不自动刷新“检测通知”列表。
+    // 否则移动端/桌面端在查看历史通知时会不断被重绘，造成“自动刷新”的观感。
     setInterval(() => {
         loadPatrolOverview();
-        loadPatrolStatus(false); // 定时加载不需要回填表单，只更新运行状态文字
-        loadPatrolHistory();
+        loadPatrolStatus(false); // 定时加载只更新运行状态文字，不回填表单、不刷新通知列表
     }, 5000);
 
     // ---------------- 导航/过滤/搜索 ----------------
