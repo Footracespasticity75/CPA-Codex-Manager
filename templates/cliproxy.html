@@ -493,7 +493,7 @@
                     <div id="patrol-info"
                         style="font-size: 11px; text-align: right; margin-right: 12px; color: var(--text-muted); line-height: 1.2;">
                         自动巡检<br><span id="patrol-status-label" class="text-secondary"
-                            style="font-weight: 600;">获取中...</span>
+                            style="font-weight: 600; display: inline-block; white-space: pre-line; line-height: 1.5;">获取中...</span>
                     </div>
                     <button class="btn btn-secondary" onclick="toggleDrawer(true)"
                         style="height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 16px;">
@@ -536,7 +536,7 @@
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                         </svg>
-                        检测通知 (最近 20 条)
+                        <span id="patrol-history-title">检测通知 (最近 20 条)</span>
                     </h3>
                 </div>
                 <div id="patrol-history-list" class="notification-list">

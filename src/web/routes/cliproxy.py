@@ -63,6 +63,8 @@ class AutoPatrolConfig(BaseModel):
     replenish_interval_min: int = 1
     replenish_interval_max: int = 3
     patrol_workers: int = 20
+    patrol_timeout: int = 45
+    startup_jitter_seconds: int = 8
 
 class ActionRequest(BaseModel):
     service_id: int
@@ -100,6 +102,13 @@ def _contains_limit_error(text: str) -> bool:
 def _new_batch_id(prefix: str) -> str:
     """生成批量任务 ID，避免秒级时间戳导致不同任务发生复用/串线。"""
     return f"{prefix}_{uuid.uuid4().hex}"
+
+
+def _mark_batch_failed(batch_id: str, reason: str, log_message: Optional[str] = None):
+    """统一记录批次失败原因，便于自动巡检日志排查。"""
+    if log_message:
+        task_manager.add_batch_log(batch_id, log_message)
+    task_manager.update_batch_status(batch_id, finished=True, status="failed", error=reason)
 
 # ---------------- Core Logic ----------------
 
@@ -154,8 +163,11 @@ async def perform_scan(batch_id: str, req: ScanRequest):
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, req.service_id)
         if not service:
-            task_manager.add_batch_log(batch_id, f"[错误] 找不到指定的 CPA 服务 ID: {req.service_id}")
-            task_manager.update_batch_status(batch_id, finished=True, status="failed")
+            _mark_batch_failed(
+                batch_id,
+                reason=f"找不到指定的 CPA 服务 ID: {req.service_id}",
+                log_message=f"[错误] 找不到指定的 CPA 服务 ID: {req.service_id}"
+            )
             return
     service_lookup_cost = time.perf_counter() - service_lookup_started
     task_manager.add_batch_log(batch_id, f"[阶段] 已加载 CPA 服务配置，耗时 {service_lookup_cost:.2f}s")
@@ -236,9 +248,19 @@ async def perform_scan(batch_id: str, req: ScanRequest):
                 all_files = await _fetch_selected_files(session, req.names)
             if all_files is None or not req.names:
                 all_files = await _fetch_all_files(session)
+    except asyncio.TimeoutError:
+        _mark_batch_failed(
+            batch_id,
+            reason=f"拉取账号列表超时（timeout={req.timeout}s）",
+            log_message=f"[错误] 拉取账号列表超时，请检查 CPA 管理端响应速度或适当提高超时时间（当前 {req.timeout}s）"
+        )
+        return
     except Exception as e:
-        task_manager.add_batch_log(batch_id, f"[错误] 网络连接异常: {str(e)}")
-        task_manager.update_batch_status(batch_id, finished=True, status="failed")
+        _mark_batch_failed(
+            batch_id,
+            reason=f"拉取账号列表网络异常: {str(e)}",
+            log_message=f"[错误] 网络连接异常: {str(e)}"
+        )
         return
 
     list_fetch_cost = time.perf_counter() - list_fetch_started
@@ -246,8 +268,11 @@ async def perform_scan(batch_id: str, req: ScanRequest):
 
     if not all_files:
         task_manager.init_batch(batch_id, total=0)
-        task_manager.add_batch_log(batch_id, "[错误] 无法获取文件列表")
-        task_manager.update_batch_status(batch_id, finished=True, status="failed")
+        _mark_batch_failed(
+            batch_id,
+            reason="拉取账号列表成功但返回为空",
+            log_message="[错误] 无法获取文件列表：CPA 管理端返回空列表"
+        )
         return
 
     # 过滤候选
@@ -527,7 +552,9 @@ class AutoPatrolManager:
 
     async def _delayed_start(self):
         await asyncio.sleep(5)
-        self.start()
+        for service_id, cfg in list(self._configs.items()):
+            if cfg.enabled:
+                self.start(service_id)
 
     async def _delayed_start_if_needed(self):
         """在事件循环就绪后按需延迟启动自动巡检。"""
@@ -637,6 +664,7 @@ class AutoPatrolManager:
         logger.info(f"自动巡检已停止: service_id={service_id}")
 
     async def _loop(self, service_id: int):
+        first_round = True
         while True:
             try:
                 config = self._configs.get(service_id)
@@ -644,6 +672,15 @@ class AutoPatrolManager:
                     self._status_map[service_id] = "stopped"
                     await asyncio.sleep(10)
                     continue
+
+                if first_round:
+                    jitter_max = max(0, int(getattr(config, 'startup_jitter_seconds', 8) or 0))
+                    if jitter_max > 0:
+                        jitter = min(jitter_max, service_id % (jitter_max + 1))
+                        if jitter > 0:
+                            logger.info(f"自动巡检首轮错峰等待 {jitter}s: service_id={service_id}")
+                            await asyncio.sleep(jitter)
+                    first_round = False
 
                 self._status_map[service_id] = "running"
                 self._last_run_map[service_id] = datetime.now()
@@ -669,7 +706,8 @@ class AutoPatrolManager:
                     weekly_threshold=config.weekly_threshold,
                     primary_threshold=config.primary_threshold,
                     allow_disabled=True,
-                    workers=getattr(config, 'patrol_workers', 20)
+                    workers=getattr(config, 'patrol_workers', 20),
+                    timeout=max(15, int(getattr(config, 'patrol_timeout', 45) or 45)),
                 )
                 
                 # 直接通过 perform_scan 执行，内部有 init_batch 和完成逻辑
@@ -684,7 +722,10 @@ class AutoPatrolManager:
                     continue
 
                 if status.get("status") != "completed":
-                    logger.warning(f"自动巡检扫描未成功完成: batch_id={batch_id}, status={status.get('status')}")
+                    logger.warning(
+                        f"自动巡检扫描未成功完成: batch_id={batch_id}, status={status.get('status')}, "
+                        f"error={status.get('error') or '-'}"
+                    )
 
                 if status and status.get("status") == "completed":
                     results = status.get("results", [])
